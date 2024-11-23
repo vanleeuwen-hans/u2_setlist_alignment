@@ -9,11 +9,10 @@ library(ggplot2)
 library(gridExtra)
 
 # Load custom library - make this more robust
-#library(devtools)
-#devtools::install_github("vanleeuwen-hans/concertData")
-#devtools::install("/Volumes/homes/family/Documents/Hans/Bioinformatics/R/packages/concertData")
-#devtools::load_all()
-library(concertData)
+if (!require("concertData")) {
+  remotes::install_github("https://github.com/vanleeuwen-hans/concertData")
+  library(concertData)
+}
 
 
 # Define helper functions first

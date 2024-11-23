@@ -1,3 +1,8 @@
+if (!require("concertData")) {
+  remotes::install_github("https://github.com/vanleeuwen-hans/concertData")
+  library(concertData)
+}
+
 server <- function(input, output, session) {
   tour_data <- reactive({
     req(input$selected_tour)

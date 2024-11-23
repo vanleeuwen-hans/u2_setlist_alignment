@@ -1,0 +1,12 @@
+Package: u2_setlist_alignment
+Title: Your App Title
+Version: 1.0.0
+Authors@R: person("van Leeuwen", "hans", email = "hans.data.universe@gmail.com", role = c("aut", "cre"))
+Description: Multiple Setlist Alignment of U2 Tours
+License: GPL-3.0 license
+Imports:
+    shiny,
+    remotes,
+    concertData
+Remotes:
+    https://github.com/vanleeuwen-hans/concertData
