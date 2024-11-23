@@ -1,17 +1,26 @@
 server <- function(input, output, session) {
-  
-  max_shows <- reactive({
-    as.numeric(input$max_shows)
+  tour_data <- reactive({
+    req(input$selected_tour)
+    tour_data_list[[input$selected_tour]]
   })
   
-
-  output$setlistPlot <- renderPlot({
-    req(input$tour)
-    tryCatch({
-      create_setlist_alignment(u2data, input$tour, max_shows = max_shows())
-    }, error = function(e) {
-      plot(0, 0, type = "n", axes = FALSE, xlab = "", ylab = "")
-      text(0, 0, paste("Error:", e$message), cex = 1.5)
-    })
+  tour_song_codes <- reactive({
+    req(input$selected_tour)
+    tour_song_codes_list[[input$selected_tour]]
+  })
+  
+  alignment_data <- reactive({
+    req(input$selected_tour)
+    read_mafft_clustal_alignment(get_alignment_filename(input$selected_tour))
+  })
+  
+  output$tour_visualization <- renderPlot({
+    req(tour_data(), tour_song_codes(), alignment_data())
+    prepare_and_create_visualization(
+      tour_data(),
+      tour_song_codes(),
+      alignment_data(),
+      input$selected_tour
+    )
   })
 }

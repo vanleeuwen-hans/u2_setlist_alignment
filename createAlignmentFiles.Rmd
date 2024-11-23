@@ -1,0 +1,141 @@
+---
+title: "sandbox"
+author: "Hans van Leeuwen"
+date: "2024-11-21"
+output: html_document
+---
+
+## Create hex and codes files
+
+This will be used as input for mafft on the command line, and the Shiny app, respectively.
+
+```{r setup, include=FALSE}
+
+library(devtools)
+devtools::install_github("vanleeuwen-hans/concertData", force = TRUE)
+library(concertData)
+
+# read the u2 concertData
+u2data <- read_concertData_csv('data/u2data_all_shows_clean_final.csv')
+# List of tours to exclude as this analysis focuses on the regular tours done after a U2 album release.
+excluded_tours <- c(
+   "U2 Stories of Surrender Tour",
+   "U2 Songs Of Experience Promo Tour",
+   "U2 Songs Of Innocence Promo Tour",
+   "U2 No Line On The Horizon Promo Tour",
+   "U2 How To Dismantle An Atomic Bomb Promo Tour",
+   "U2 All That You Can't Leave Behind Promo Tour",
+   "U2 Conspiracy Of Hope",
+   "U2 11 O'Clock Tick Tock Tour",
+   "U2 Early Days",
+   "U2 Various Dates"
+)
+# create data frame without excluded tours
+data_selected_tours <- concertData_remove_tours(u2data, excluded_tours)
+
+# Get unique tours
+unique_tours <- unique(data_selected_tours$tour)
+
+
+# Iterate through each tour
+for (current_tour in unique_tours) {
+  # debug
+  print("Processing Tour: \n")
+  print(current_tour)
+  print("\n")
+  # Filter for specific tour
+  tour_data <- data_selected_tours[data_selected_tours$tour == current_tour, ]
+  # Remove snippets
+  no_snippets_data <- concertData_remove_snippets(tour_data)
+  # Remove shows with no setlist 
+  filtered_data <- concertData_remove_showsNoSetlist(no_snippets_data)
+  
+  # Process the songs to create the mapping of codes
+  codes_tour_songs <- codify_tour_song_titles(filtered_data)
+  # write this to file as it is needed later in the Shiny app
+  codes_tour_songs_filename <- paste0(
+      "data/codes/u2_setlists_alignments_codes_",
+      gsub("[^[:alnum:]]", "_", current_tour),
+      ".rds")
+  saveRDS(codes_tour_songs, codes_tour_songs_filename)  
+  
+  # Prepare all setlist sequences
+  all_setlist_sequences <- prepare_setlist_sequences(filtered_data, codes_tour_songs)
+  
+  # Find the most representative setlists
+  representative_setlists <- find_most_representative_setlists(all_setlist_sequences, n_representatives = 30)
+  
+  # debug
+  print("Creating mafft output\n")
+
+  # Create fasta-format sequences representing the set-lists of the representative shows
+  fasta_mafft_output <- create_setlist_fasta_mafft(representative_setlists)
+ 
+  # debug
+  print("Created mafft output\n") 
+  
+  # outputfile name
+  outputfile <- paste0(
+      "data/hexfiles/u2_setlists_",
+      gsub("[^[:alnum:]]", "_", current_tour),
+      ".hex")
+  
+  # write to file
+  writeLines(fasta_mafft_output, outputfile)
+  
+  # debug
+  print("Written to file: \n")
+  print(outputfile)
+  print("\n")
+}
+
+
+```
+
+## Create alignments on command line
+
+we convert the HEX file to ASCII code using the hex2mafftext command:
+
+``` bash
+hex2maffttext u2_setlists_U2_Lovetown_Tour.hex > u2_setlists_U2_Lovetown_Tour.ASCII
+hex2maffttext u2_setlists_U2_Boy_Tour.hex > u2_setlists_U2_Boy_Tour.ASCII
+hex2maffttext u2_setlists_U2_Unforgettable_Fire_Tour.hex > u2_setlists_U2_Unforgettable_Fire_Tour.ASCII
+hex2maffttext u2_setlists_U2_October_Tour.hex > u2_setlists_U2_October_Tour.ASCII
+hex2maffttext u2_setlists_U2_PopMart_Tour.hex > u2_setlists_U2_PopMart_Tour.ASCII
+hex2maffttext u2_setlists_U2_War_Tour.hex > u2_setlists_U2_War_Tour.ASCII
+hex2maffttext u2_setlists_U2_ZOO_TV_Tour.hex > u2_setlists_U2_ZOO_TV_Tour.ASCII
+hex2maffttext u2_setlists_U2_Joshua_Tree_Tour.hex > u2_setlists_U2_Joshua_Tree_Tour.ASCII
+hex2maffttext u2_setlists_U2_Elevation_Tour.hex > u2_setlists_U2_Elevation_Tour.ASCII
+hex2maffttext u2_setlists_U2_Vertigo_Tour.hex > u2_setlists_U2_Vertigo_Tour.ASCII
+hex2maffttext u2_setlists_U2_360__Tour.hex > u2_setlists_U2_360__Tour.ASCII
+hex2maffttext u2_setlists_U2_Innocence___Experience_Tour.hex > u2_setlists_U2_Innocence___Experience_Tour.ASCII
+hex2maffttext u2_setlists_U2_Joshua_Tree_Tour_2017.hex > u2_setlists_U2_Joshua_Tree_Tour_2017.ASCII
+hex2maffttext u2_setlists_U2_Experience___Innocence_Tour.hex > u2_setlists_U2_Experience___Innocence_Tour.ASCII
+hex2maffttext u2_setlists_U2_Joshua_Tree_Tour_2019.hex > u2_setlists_U2_Joshua_Tree_Tour_2019.ASCII
+hex2maffttext u2_setlists_U2_U2_UV_Achtung_Baby_Live_at_the_Sphere.hex > u2_setlists_U2_U2_UV_Achtung_Baby_Live_at_the_Sphere.ASCII
+```
+
+Then we run the actual multiple setlist alignments with the command:
+
+``` bash
+mafft --text --clustalout u2_setlists_U2_Lovetown_Tour.ASCII > u2_setlists_mafft_alignment_U2_Lovetown_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Boy_Tour.ASCII > u2_setlists_mafft_alignment_U2_Boy_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Unforgettable_Fire_Tour.ASCII > u2_setlists_mafft_alignment_U2_Unforgettable_Fire_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_October_Tour.ASCII > u2_setlists_mafft_alignment_U2_October_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_PopMart_Tour.ASCII > u2_setlists_mafft_alignment_U2_PopMart_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_War_Tour.ASCII > u2_setlists_mafft_alignment_U2_War_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_ZOO_TV_Tour.ASCII > u2_setlists_mafft_alignment_U2_ZOO_TV_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Joshua_Tree_Tour.ASCII > u2_setlists_mafft_alignment_U2_Joshua_Tree_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Elevation_Tour.ASCII > u2_setlists_mafft_alignment_U2_Elevation_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Vertigo_Tour.ASCII > u2_setlists_mafft_alignment_U2_Vertigo_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_360__Tour.ASCII > u2_setlists_mafft_alignment_U2_360__Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Innocence___Experience_Tour.ASCII > u2_setlists_mafft_alignment_U2_Innocence___Experience_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Joshua_Tree_Tour_2017.ASCII > u2_setlists_mafft_alignment_U2_Joshua_Tree_Tour_2017.ASCII
+mafft --text --clustalout u2_setlists_U2_Experience___Innocence_Tour.ASCII > u2_setlists_mafft_alignment_U2_Experience___Innocence_Tour.ASCII
+mafft --text --clustalout u2_setlists_U2_Joshua_Tree_Tour_2019.ASCII > u2_setlists_mafft_alignment_U2_Joshua_Tree_Tour_2019.ASCII
+mafft --text --clustalout u2_setlists_U2_U2_UV_Achtung_Baby_Live_at_the_Sphere.ASCII > u2_setlists_mafft_alignment_U2_U2_UV_Achtung_Baby_Live_at_the_Sphere.ASCII
+```
+
+Check that all files have been created.
+
+Move to alignments folder.

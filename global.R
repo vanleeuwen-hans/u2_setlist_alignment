@@ -1,137 +1,145 @@
-# Load necessary libraries
+# load libraries
+# First, load all required libraries
 library(shiny)
 library(dplyr)
-library(readr)
-library(tidyr)
-library(ggplot2)
-library(stringdist)
 library(stringr)
-library(gridExtra)
 library(shinycssloaders)
+library(pryr)
+library(ggplot2)
+library(gridExtra)
 
-# Improved function to create acronyms or shortened titles
-create_short_title <- function(title, use_acronyms = TRUE) {
-  if (is.na(title) || title == "") return("")
-  
-  # Remove special characters at the start of each word
-  words <- str_split(title, "\\s+")[[1]]  # Split by spaces
-  words <- str_replace_all(words, "^\\W+", "")  # Remove leading special characters from each word
-  
-  if (use_acronyms) {
-    if (length(words) == 1) {
-      return(toupper(substr(title, 1, 4)))  # First 4 letters for single-word titles
-    } else {
-      return(toupper(paste(substr(words, 1, 1), collapse = "")))  # Acronym for multi-word titles
-    }
-  } else {
-    return(substr(title, 1, 4))  # First 4 letters for all titles if acronyms are not used
-  }
+# Load custom library - make this more robust
+#library(devtools)
+#devtools::install_github("vanleeuwen-hans/concertData")
+#devtools::install("/Volumes/homes/family/Documents/Hans/Bioinformatics/R/packages/concertData")
+#devtools::load_all()
+library(concertData)
+
+
+# Define helper functions first
+get_alignment_filename <- function(tour_name) {
+  paste0(
+    "data/alignments/u2_setlists_mafft_alignment_",
+    gsub("[^[:alnum:]]", "_", tour_name),
+    ".ASCII"
+  )
 }
 
-# Function to align sequences
-align_sequences <- function(seq1, seq2) {
-  max_length <- max(length(seq1), length(seq2))
-  seq1 <- c(seq1, rep(NA, max_length - length(seq1)))
-  seq2 <- c(seq2, rep(NA, max_length - length(seq2)))
-  
-  alignment <- stringdist::stringdist(seq1, seq2, method = "lv")
-  similarity <- 1 - (alignment / max_length)
-  list(alignment = alignment, similarity = similarity)
+get_codes_filename <-function(tour_name) {
+  paste0(
+    "data/codes/u2_setlists_alignments_codes_",
+    gsub("[^[:alnum:]]", "_", tour_name),
+    ".rds")
 }
 
-# Main function
-create_setlist_alignment <- function(data, tour_name, max_shows = 20, use_acronyms = TRUE) {
-  # Filter data for the specified tour and exclude snippets
-  tour_data <- data %>%
-    filter(tour == tour_name, !snippet) %>%
-    filter(!is.na(song_position) & !is.na(song_title)) %>%
-    arrange(date, song_position)
+create_visualization <- function(viz_data, tour_name, num_setlists) {
+  # Create legend
+  legend_data <- viz_data[!viz_data$is_gap, c("song_title", "four_letter_code")]
+  legend_data <- unique(legend_data[order(legend_data$song_title), ])
+  legend_text <- paste(legend_data$four_letter_code, "=", legend_data$song_title, collapse = ", ")
   
-  # Create sequence of songs for each show
-  show_sequences <- tour_data %>%
-    group_by(date) %>%
-    summarise(sequence = list(song_title), .groups = "drop")
+  # Create color scale
+  n_songs <- length(unique(viz_data$song_title[!viz_data$is_gap]))
+  song_colors <- create_distinct_palette(n_songs)
+  names(song_colors) <- unique(viz_data$song_title[!viz_data$is_gap])
+  song_colors <- c(song_colors, GAP = "white")
   
-  # Perform pairwise alignments
-  alignments <- tryCatch({
-    combn(show_sequences$date, 2, function(pair) {
-      seq1 <- show_sequences$sequence[[which(show_sequences$date == pair[1])]]
-      seq2 <- show_sequences$sequence[[which(show_sequences$date == pair[2])]]
-      result <- align_sequences(seq1, seq2)
-      data.frame(date1 = pair[1], date2 = pair[2], 
-                 similarity = result$similarity, 
-                 alignment = result$alignment)
-    }, simplify = FALSE) %>% bind_rows()
-  }, error = function(e) {
-    warning("Error in alignment calculation: ", e$message)
-    return(NULL)
-  })
+  # Prepare data
+  viz_data$city_date <- paste(viz_data$city, "-", as.character(viz_data$date))
+  viz_data$show_id <- seq_len(nrow(viz_data))
+  viz_data$city_date <- factor(viz_data$city_date, 
+                               levels = unique(viz_data$city_date[viz_data$show_id]))
   
-  if (is.null(alignments)) {
-    stop("Unable to calculate alignments. Check your data for inconsistencies.")
-  }
-  
-  # Select representative setlists
-  representative_dates <- alignments %>%
-    group_by(date1) %>%
-    summarise(avg_similarity = mean(similarity, na.rm = TRUE)) %>%
-    arrange(desc(avg_similarity)) %>%
-    head(max_shows) %>%
-    pull(date1)
-  
-  # Prepare data for visualization
-  viz_data <- tour_data %>%
-    filter(date %in% representative_dates) %>%
-    group_by(date) %>%
-    mutate(position = row_number(),
-           short_title = sapply(song_title, create_short_title, use_acronyms = use_acronyms)) %>%
-    ungroup()
-  
-  # Create legend for acronyms/short titles
-  legend_data <- viz_data %>%
-    distinct(song_title, short_title) %>%
-    arrange(song_title)
-  
-  legend_text <- paste(legend_data$short_title, "=", legend_data$song_title, collapse = ", ")
-  
-  # Create the main plot
-  main_plot <- ggplot(viz_data, aes(x = position, y = factor(date))) +
-    geom_tile(aes(fill = song_title), color = "white", linewidth = 0.5) +
-    geom_text(aes(label = short_title), size = 2.5) +
-    scale_fill_viridis_d(option = "viridis") +
+  # Create main plot
+  main_plot <- ggplot(viz_data, aes(x = position, y = city_date)) +
+    geom_tile(aes(fill = song_title), color = "grey90", linewidth = 0.5) +
+    geom_text(aes(label = ifelse(is_gap, "", four_letter_code)), 
+              size = 3,
+              color = "white") +
+    scale_fill_manual(values = song_colors) +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 7),
-          axis.text.y = element_text(size = 7),
-          plot.title = element_text(size = 16),
-          plot.subtitle = element_text(size = 13),
-          legend.position = "none") +
-    labs(x = "Song Position", y = "Show Date",
+          axis.text.y = element_text(size = 8),
+          plot.title = element_text(size = 12, hjust = 0.5),
+          plot.subtitle = element_text(size = 10, hjust = 0.5),
+          legend.position = "none",
+          panel.grid = element_blank()) +
+    labs(x = "Song Position", 
+         y = "City - Show Date",
          title = paste("Setlist Alignment for", tour_name),
-         subtitle = paste("Showing", max_shows, "most representative setlists"))
+         subtitle = paste("Showing", num_setlists, 
+                          "most representative setlists. Empty white cells indicate inserted/skipped songs"))
   
-  # Create a separate plot for the legend that explains song acronyms
+  # Create legend plot
   legend_plot <- ggplot() +
-    geom_text(aes(x=0.5, y=0.5, label=str_wrap(legend_text, width=200)), 
-              size=3.5, hjust=0.5) +
+    geom_text(aes(x = 0.5, y = 0.5, label = str_wrap(legend_text, width = 250)), 
+              size = 3, hjust = 0.5) +
     theme_void() + 
-    theme(plot.margin=margin(t=10))
+    theme(plot.margin = margin(t = 10))
   
-  # Combine plots using gridExtra
-  combined_plot <- grid.arrange(main_plot,
-                                legend_plot,
-                                ncol=1,
-                                heights=c(4, 1)) 
-  return(combined_plot)
+  # Return arranged plots
+  grid.arrange(main_plot,
+               legend_plot,
+               ncol = 1,
+               heights = c(4, 1))
 }
 
-# Function to safely read data with error handling
-safe_read_data <- function(file_path) {
-  tryCatch({
-    read_csv(file_path, show_col_types = FALSE)
-  }, error = function(e) {
-    stop(paste("Error reading data file:", e$message))
-  })
+prepare_and_create_visualization <- function(tour_data, tour_song_codes, alignment_data, tour_name) {
+  # Prepare song code lookup
+  song_code_lookup <- tour_song_codes[, c("hex_char", "four_letter_code", "song_title")]
+  
+  # Create visualization data
+  viz_data <- create_setlist_viz_data(
+    alignment_data, 
+    song_code_lookup, 
+    tour_data
+  )
+  
+  # Get number of setlists
+  num_setlists <- length(unique(alignment_data$showID))
+  
+  # Create and return visualization
+  create_visualization(viz_data, tour_name, num_setlists)
 }
 
-# Load data
-u2data <- safe_read_data('u2data_all_shows_clean_final.csv')
+# Read and prepare data with error handling
+tryCatch({
+  # Define excluded tours
+  excluded_tours <- c(
+    "U2 Stories of Surrender Tour",
+    "U2 Songs Of Experience Promo Tour",
+    "U2 Songs Of Innocence Promo Tour",
+    "U2 No Line On The Horizon Promo Tour",
+    "U2 How To Dismantle An Atomic Bomb Promo Tour",
+    "U2 All That You Can't Leave Behind Promo Tour",
+    "U2 Conspiracy Of Hope",
+    "U2 11 O'Clock Tick Tock Tour",
+    "U2 Early Days",
+    "U2 Various Dates"
+  )
+  
+  # Read data
+  u2data <- read_concertData_csv('data/u2data_all_shows_clean_final.csv')
+  
+  # Process data
+  no_snippets_data <- concertData_remove_snippets(u2data)
+  selected_tours_data <- concertData_remove_tours(no_snippets_data, excluded_tours)
+  setlists_shows_data <- concertData_remove_showsNoSetlist(selected_tours_data)
+  
+
+  # Prepare tour list for dropdown
+  unique_tours <- unique(setlists_shows_data$tour)
+
+  # Pre-calculate tour data and song codes 
+  tour_data_list <- list()
+  tour_song_codes_list <- list()
+  
+  for(tour_name in unique_tours) {
+    tour_data_list[[tour_name]] <- filter(setlists_shows_data, tour == tour_name)
+    # read file with tour song codes
+    tour_song_codes_list[[tour_name]] <- readRDS(get_codes_filename(tour_name))
+  }
+}, error = function(e) {
+  stop("Error in data preparation: ", e$message)
+})
+

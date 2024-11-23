@@ -3,4 +3,4 @@
 .RData
 .Ruserdata
 rsconnect
-u2data_all_shows_clean_final.csv
+data/u2data_all_shows_clean_final.csv
