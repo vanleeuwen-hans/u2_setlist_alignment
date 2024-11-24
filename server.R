@@ -1,8 +1,3 @@
-if (!require("concertData")) {
-  install.packages("https://github.com/vanleeuwen-hans/concertData/archive/refs/tags/v0.1.0.tar.gz", type = "source")
-  library(concertData)
-}
-
 server <- function(input, output, session) {
   tour_data <- reactive({
     req(input$selected_tour)

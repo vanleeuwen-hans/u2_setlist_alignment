@@ -8,11 +8,17 @@ library(pryr)
 library(ggplot2)
 library(gridExtra)
 
-# Load custom library - make this more robust
-if (!require("concertData")) {
-  install.packages("https://github.com/vanleeuwen-hans/concertData/archive/refs/tags/v0.1.0.tar.gz", type = "source")
-  library(concertData)
-}
+# Use custom library functions
+# Note: using my concertData package from GitHub 
+# resulted in compiling errors during shinyapps.io deployment,
+# this is a workaround
+source("../../packages/concertData/R/tourSetlistAlignment.R")
+source("../../packages/concertData/R/utils.R")
+source("../../packages/concertData/R/tourStatistics.R")
+source("../../packages/concertData/R/tourSetlistDistanceTree.R")
+source("../../packages/concertData/R/tourWorldMaps.R")
+source("../../packages/concertData/R/tourSetlistVariability.R")
+
 
 
 # Define helper functions first
