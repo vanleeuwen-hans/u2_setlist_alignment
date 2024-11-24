@@ -12,12 +12,12 @@ library(gridExtra)
 # Note: using my concertData package from GitHub 
 # resulted in compiling errors during shinyapps.io deployment,
 # this is a workaround
-source("../../packages/concertData/R/tourSetlistAlignment.R")
-source("../../packages/concertData/R/utils.R")
-source("../../packages/concertData/R/tourStatistics.R")
-source("../../packages/concertData/R/tourSetlistDistanceTree.R")
-source("../../packages/concertData/R/tourWorldMaps.R")
-source("../../packages/concertData/R/tourSetlistVariability.R")
+source("packages/concertData/R/tourSetlistAlignment.R")
+source("packages/concertData/R/utils.R")
+source("packages/concertData/R/tourStatistics.R")
+source("packages/concertData/R/tourSetlistDistanceTree.R")
+source("packages/concertData/R/tourWorldMaps.R")
+source("packages/concertData/R/tourSetlistVariability.R")
 
 
 
