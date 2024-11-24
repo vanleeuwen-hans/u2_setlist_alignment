@@ -10,7 +10,7 @@ library(gridExtra)
 
 # Load custom library - make this more robust
 if (!require("concertData")) {
-  remotes::install_github("https://github.com/vanleeuwen-hans/concertData")
+  install.packages("https://github.com/vanleeuwen-hans/concertData/archive/refs/tags/v0.1.0.tar.gz", type = "source")
   library(concertData)
 }
 
