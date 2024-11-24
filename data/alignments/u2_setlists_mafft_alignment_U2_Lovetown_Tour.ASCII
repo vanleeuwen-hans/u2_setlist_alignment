@@ -1,34 +1,34 @@
 CLUSTAL format alignment by MAFFT NW-NS-2 (v7.526)
 
 
-showID830       -]LE-S-U@9DA--J3VFR-,WGm'--
-showID1036      -]LE-S-U@9DA--VBcFR-,WGm'--
-showID759       -Z9D-A-]LE6@--J3MFR-,WGm'--
-showID884       -]LEKS-N@9DA--J3MFR-,WGm'--
-showID932       -]LE-S-U@9DA----VFR-,WGm---
-showID945       -B9D-A-]LES---N3VFR-,WGm'--
-showID960       -]LE-S-UB9DA----VFR-,WGm---
-showID1023      -B9D-A-]LESU--@3VFR-,WGm'--
-showID11        -]LE-SNK@9DA--VBcFR-,WG'---
-showID742       -]LE-S-UBcm@--D3MFR-,WG'---
-showID771       -]LE-S-U@9DA--J3MFR-,WGBcm-
-showID8         -@9D-A-]LEJ3--VBcFR-,WG'---
-showID940       -]LE-S-m@9DA--V-BcJ-,WGR'--
-showID1066      -@9D-A-]KESN--VBcFR-,WGm'--
-showID763       -]LE-S-N@9DA--J3MFR-,WGBcm-
-showID878       -B9D-A-]LES---N3VFRJ,WGm'--
-showID774       Z9DB-c-]LESN--@3MFR-,WGm'--
-showID1043      -B9D-A-]LESN--C3VFR-,JWG'--
-showID9         -]LE-S-U@9DA--V-BcO-,WGmR'-
-showID813       -B9D-A-]LESN--J3VFR-,WG----
-showID862       ]LKE-S-N@9DA--J3VFR-,WGBcm-
-showID914       -]LE-S@9DA3V--BcmFR-,WGI'--
-showID908       -B9D-A-]LESUK@C3VFR-,WGm'--
-showID1067      -]LE-S-U@9D3--V-BcJ-,WG4R'-
-showID873       -]LE-S-NK9DA--J3VFR-,WGBcm'
-showID836       -]LK---EA9DC--3-MFR-,WGBcm-
-showID912       -Z9D-A@BcKLE--:3VFR-,WG'---
-showID740       -Z9D-BcA]LEJ--3m@FR-,WG'---
-showID1030      -]LE-SNK@9DA--V-BcJ-,WGmR'-
-showID12        B9D;-A-]LEJ3--VFR,W-G?H'---
-                                           
+showID914       --]LES@9D---A3V-BcmFR,WGI'---
+showID797       -Z9DBc]LK---EAJ--,WGm@FRI'---
+showID763       --]LESN@9---DAJ--3MFR,WGBcm--
+showID11        --]LESNK@9--DAV--BcFR,WG'----
+showID932       --]LESU@9---DA----VFR,WGm----
+showID969       -PRFEJSN]---KC3--VBc;,WG9DA'-
+showID9         --]LESU@9---DA---VBcO,WGmR'--
+showID862       -]LKESN@9---DAJ--3VFR,WGBcm--
+showID873       --]LESNK9---DAJ--3VFR,WGBcm'-
+showID955       --B9DA]KE----:m--@FRJ,WG'----
+showID721       --Z9DA]LEN--@6J--3MFRBcm,WG'-
+showID908       --B9DA]LES-UK@C--3VFR,WGm'---
+showID830       --]LESU@9---DAJ--3VFR,WGm'---
+showID724       --]LESUBc---m@9DC3MFR,WG-----
+showID778       -P69DA]LESN@BcV--3MFR,WG'----
+showID8         --@9DA]LE---J3V--BcFR,WG'----
+showID912       --Z9DA@BcK--LE:--3VFR,WG'----
+showID1030      --]LESNK@9--DAV--BcJ,WGmR'---
+showID729       -6DBcA]LE---J3m--@9FR,WG-----
+showID746       --]LEN@9D---P3---m,WGBcAFR---
+showID878       --B9DA]LE---SN3--VFRJ,WGm'---
+showID791       --]LEASUQ---K9D--3MFR,WGBcm--
+showID12        -B9D;A]LE-----J--3VFR,WG?H'--
+showID813       --B9DA]LE---SNJ--3VFR,WG-----
+showID784       B]LKESU@9---DA---3VmJ,WGFRHP'
+showID755       --]LESU@9---D3---m,WGBcAFR---
+showID1047      -]LKESmB9---DA---VFRX,WG-----
+showID759       --Z9DA]LE---6@J--3MFR,WGm'---
+showID1068      Bc@9DA]LE---SNV--HFRO,WG?m---
+showID1053      --Z9DA]LES--U@C--3VFR'-------
+                                             

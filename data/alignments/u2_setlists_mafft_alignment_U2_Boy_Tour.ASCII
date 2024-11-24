@@ -1,34 +1,34 @@
 CLUSTAL format alignment by MAFFT NW-NS-2 (v7.526)
 
 
-showID22        E?R:MCWLG---
-showID28        E?R:MCWLG---
-showID32        E?R:MCWLG---
-showID71        E?R:MCWL?E--
-showID118       E?R:YDMCWLG-
-showID119       E?R:YDMCWLG-
-showID47        E?R:MCWLG?--
-showID61        E?R:MCL-----
-showID327       E?L6:-CHGL--
-showID474       E?L:YDCHGWL-
-showID17        E?:YDMWL@G--
-showID794       E?LR@DMC?L--
-showID978       -?:YDMWL?---
-showID436       E?L:MCHG?LE-
-showID1062      E?LHCG?-----
-showID1031      -?:YDMWL?G--
-showID164       E?R:MCWLG?E-
-showID20        E?R:YDMCWL?E
-showID701       E?LR@WDMCHG-
-showID737       E?LR@WDMCHG-
-showID753       E?LR@WDMCHG-
-showID775       E?LR@WDMCHG-
-showID204       EWL?:MCHGL--
-showID238       EWL?:MCHG---
-showID999       -?:MWL?G----
-showID995       -?:WECLG?---
-showID63        --:YDMCW?---
-showID673       -?LC@WD?----
-showID793       E?LR@WDMCH?-
-showID891       E?LR@WDMCH?-
-                            
+showID793       --E?LR@WDMCH?-----
+showID673       ---?LC@WD?--------
+showID61        -----E?R:MCL------
+showID244       -----E?L:MCHG@?EL-
+showID365       ---E?L6R:MCHGWL@--
+showID424       E?RL6A:YDMCHGWL@--
+showID882       --CE?R:YDMWL(-----
+showID701       --E?LR@WDMCHG-----
+showID127       ------L-----------
+showID794       ---E?LR@DMC?L-----
+showID34        ------LG----------
+showID204       ----EWL?:MCHGL----
+showID118       ---E?R:YDMCWLG----
+showID1050      --E?R@:MWLCHG-----
+showID248       ---E?L:YDMCHG@?EL-
+showID233       ------L1L---------
+showID274       ------LL----------
+showID22        -----E?R:MCWLG----
+showID713       ------?R@WC-------
+showID270       -------G----------
+showID164       -----E?R:MCWLG?E--
+showID344       --E?L6:YDMCHG@?L--
+showID77        ---E?R:YDMCWLG?E--
+showID83        -----CLWG?E-------
+showID900       -------L?DCL------
+showID262       ---E?L:YDMCHGWL@?E
+showID688       ---?LR@WDMCHG?----
+showID20        ---E?R:YDMCWL?E---
+showID191       --EWL?:YDMCHG@?EL-
+showID1031      -----?:YDMWL?G----
+                                  

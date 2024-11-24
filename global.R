@@ -73,7 +73,7 @@ create_visualization <- function(viz_data, tour_name, num_setlists) {
          y = "City - Show Date",
          title = paste("Setlist Alignment for", tour_name),
          subtitle = paste("Showing", num_setlists, 
-                          "most representative setlists. Empty white cells indicate inserted/skipped songs"))
+                          "setlists best representing the variety in the tour. Empty white cells indicate inserted/skipped songs"))
   
   # Create legend plot
   legend_plot <- ggplot() +

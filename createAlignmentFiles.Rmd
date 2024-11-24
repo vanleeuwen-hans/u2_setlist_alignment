@@ -70,7 +70,7 @@ for (current_tour in unique_tours) {
   all_setlist_sequences <- prepare_setlist_sequences(filtered_data, codes_tour_songs)
   
   # Find the most representative setlists
-  representative_setlists <- find_most_representative_setlists(all_setlist_sequences, n_representatives = 30)
+  representative_setlists <- find_representative_setlists_kmeans(all_setlist_sequences, n_representatives = 30)
   
   # debug
   print("Creating mafft output\n")
